@@ -68,7 +68,7 @@ def get_inventory(steamid):
     start_assetid = None
 
     for _ in range(100):
-        params = {"l": "english", "count": 5000}
+        params = {"l": "english", "count": 1000}
         if start_assetid:
             params["start_assetid"] = start_assetid
 
