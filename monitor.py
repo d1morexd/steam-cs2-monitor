@@ -20,11 +20,13 @@ TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
 PARTNER_RE = re.compile(r"(?:^|[?&])partner=(\d+)")
 STEAM64_BASE = 76561197960265728
 
+MAX_RETRIES = 5
+RETRY_DELAYS = [15, 30, 60, 120, 180]
 
 session = requests.Session()
 
 session.headers.update({
-    "User-Agent": "Mozilla/5.0 (Steam CS2 Inventory Monitor)"
+    "User-Agent": "Mozilla/5.0"
 })
 
 
@@ -99,7 +101,6 @@ def telegram_send(text):
 
 def get_inventory(steamid):
     all_items = {}
-
     start_assetid = None
 
     for _ in range(100):
@@ -111,15 +112,42 @@ def get_inventory(steamid):
         if start_assetid:
             params["start_assetid"] = start_assetid
 
-        response = session.get(
-            STEAM_INVENTORY.format(steamid=steamid),
-            params=params,
-            timeout=30,
-        )
+        response = None
+
+        for attempt in range(MAX_RETRIES):
+            response = session.get(
+                STEAM_INVENTORY.format(steamid=steamid),
+                params=params,
+                timeout=30,
+            )
+
+            if response.status_code != 429:
+                break
+
+            delay = RETRY_DELAYS[
+                min(
+                    attempt,
+                    len(RETRY_DELAYS) - 1
+                )
+            ]
+
+            print(
+                f"Steam returned HTTP 429 for {steamid}. "
+                f"Waiting {delay}s before retry "
+                f"{attempt + 1}/{MAX_RETRIES}..."
+            )
+
+            time.sleep(delay)
+
+        if response is None:
+            raise RuntimeError(
+                f"No response from Steam for {steamid}"
+            )
 
         if response.status_code == 429:
             raise RuntimeError(
-                f"Steam rate limited inventory request for {steamid}"
+                f"Steam rate limited inventory request "
+                f"for {steamid} after {MAX_RETRIES} retries"
             )
 
         response.raise_for_status()
@@ -195,7 +223,7 @@ def get_inventory(steamid):
 
         start_assetid = next_assetid
 
-        time.sleep(0.5)
+        time.sleep(2)
 
     return all_items
 
@@ -237,10 +265,12 @@ def main():
     changed = False
     errors = []
 
-    for account in config.get(
+    accounts = config.get(
         "accounts",
         []
-    ):
+    )
+
+    for index, account in enumerate(accounts):
         account_name = account.get(
             "name",
             "Unnamed"
@@ -288,42 +318,43 @@ def main():
                     f"baseline created"
                 )
 
-                continue
-
-            previous_assets = previous.get(
-                "assets",
-                {}
-            )
-
-            previous_ids = set(
-                previous_assets.keys()
-            )
-
-            new_ids = current_ids - previous_ids
-
-            for asset_id in new_ids:
-                item = inventory[asset_id]
-
-                send_new_item_message(
-                    account_name,
-                    item
+            else:
+                previous_assets = previous.get(
+                    "assets",
+                    {}
                 )
 
-            accounts_state[account_name] = {
-                "steamid": steamid,
-                "assets": inventory,
-                "last_check": datetime.now(
-                    timezone.utc
-                ).isoformat(),
-            }
+                previous_ids = set(
+                    previous_assets.keys()
+                )
 
-            changed = True
+                new_ids = (
+                    current_ids - previous_ids
+                )
 
-            print(
-                f"{account_name}: "
-                f"{len(inventory)} assets, "
-                f"{len(new_ids)} new"
-            )
+                for asset_id in new_ids:
+                    item = inventory[asset_id]
+
+                    send_new_item_message(
+                        account_name,
+                        item
+                    )
+
+                accounts_state[account_name] = {
+                    "steamid": steamid,
+                    "assets": inventory,
+                    "last_check": datetime.now(
+                        timezone.utc
+                    ).isoformat(),
+                }
+
+                changed = True
+
+                print(
+                    f"{account_name}: "
+                    f"{len(inventory)} assets, "
+                    f"{len(new_ids)} new"
+                )
 
         except Exception as error:
             error_message = (
@@ -340,6 +371,9 @@ def main():
             errors.append(
                 error_message
             )
+
+        if index < len(accounts) - 1:
+            time.sleep(10)
 
     if errors:
         telegram_send(
