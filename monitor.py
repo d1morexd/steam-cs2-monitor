@@ -85,7 +85,7 @@ def get_inventory(steamid):
     for _ in range(100):
         params = {
             "l": "english",
-            "count": 1000
+            "count": 1000,
         }
 
         if start_assetid:
@@ -114,7 +114,7 @@ def get_inventory(steamid):
         for desc in data.get("descriptions", []):
             key = (
                 str(desc.get("classid")),
-                str(desc.get("instanceid"))
+                str(desc.get("instanceid")),
             )
 
             all_descriptions[key] = desc
@@ -124,10 +124,12 @@ def get_inventory(steamid):
 
             key = (
                 str(asset.get("classid")),
-                str(asset.get("instanceid"))
+                str(asset.get("instanceid")),
             )
 
             desc = all_descriptions.get(key, {})
+
+            tradable = int(desc.get("tradable", 1))
 
             all_assets[asset_id] = {
                 "assetid": asset_id,
@@ -142,6 +144,7 @@ def get_inventory(steamid):
                 "name": desc.get("name") or "Unknown item",
                 "type": desc.get("type") or "",
                 "icon_url": desc.get("icon_url") or "",
+                "tradable": tradable,
             }
 
         if not data.get("more_items"):
@@ -168,16 +171,25 @@ def escape(s):
     )
 
 
-def main():
-    config = load_json(
-        CONFIG_PATH,
-        {"accounts": []}
+def send_new_item_message(account_name, item):
+    item_name = (
+        item.get("market_hash_name")
+        or item.get("name")
+        or "Unknown item"
     )
 
-    state = load_json(
-        STATE_PATH,
-        {"accounts": {}}
+    message = (
+        "🟢 <b>Новый скин появился!</b>\n\n"
+        f"👤 Аккаунт: <b>{escape(account_name)}</b>\n"
+        f"🔫 <b>{escape(item_name)}</b>"
     )
+
+    telegram_send(message)
+
+
+def main():
+    config = load_json(CONFIG_PATH, {"accounts": []})
+    state = load_json(STATE_PATH, {"accounts": {}})
 
     accounts_state = state.setdefault("accounts", {})
 
@@ -195,7 +207,6 @@ def main():
             steamid = steamid_from_trade_url(url)
 
             inventory = get_inventory(steamid)
-
             current_ids = set(inventory.keys())
 
             previous = accounts_state.get(name)
@@ -221,23 +232,29 @@ def main():
 
             new_ids = current_ids - previous_ids
 
-            if new_ids:
-                for item_id in new_ids:
-                    item = inventory[item_id]
+            for item_id in new_ids:
+                item = inventory[item_id]
 
-                    item_name = (
-                        item.get("market_hash_name")
-                        or item.get("name")
-                        or "Unknown item"
-                    )
+                if int(item.get("tradable", 1)) == 1:
+                    send_new_item_message(name, item)
 
-                    message = (
-                        "🟢 <b>Новый скин появился!</b>\n\n"
-                        f"👤 Аккаунт: <b>{escape(name)}</b>\n"
-                        f"🔫 <b>{escape(item_name)}</b>"
-                    )
+            for item_id in current_ids & previous_ids:
+                current_item = inventory[item_id]
+                previous_item = previous_assets[item_id]
 
-                    telegram_send(message)
+                current_tradable = int(
+                    current_item.get("tradable", 1)
+                )
+
+                previous_tradable = previous_item.get("tradable")
+
+                if previous_tradable is None:
+                    continue
+
+                previous_tradable = int(previous_tradable)
+
+                if previous_tradable == 0 and current_tradable == 1:
+                    send_new_item_message(name, current_item)
 
             accounts_state[name] = {
                 "steamid": steamid,
@@ -248,17 +265,12 @@ def main():
             changed = True
 
             print(
-                f"{name}: "
-                f"{len(inventory)} assets, "
+                f"{name}: {len(inventory)} assets, "
                 f"{len(new_ids)} new"
             )
 
         except Exception as exc:
-            msg = (
-                f"{name}: "
-                f"{type(exc).__name__}: "
-                f"{exc}"
-            )
+            msg = f"{name}: {type(exc).__name__}: {exc}"
 
             print(msg, file=sys.stderr)
 
@@ -274,10 +286,7 @@ def main():
         )
 
     if changed:
-        save_json(
-            STATE_PATH,
-            state
-        )
+        save_json(STATE_PATH, state)
 
 
 if __name__ == "__main__":
