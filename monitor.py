@@ -8,7 +8,9 @@ from datetime import datetime, timezone
 
 import requests
 
+
 ROOT = Path(__file__).resolve().parent
+
 CONFIG_PATH = ROOT / "config" / "accounts.json"
 STATE_PATH = ROOT / "data" / "state.json"
 
@@ -18,9 +20,11 @@ TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
 PARTNER_RE = re.compile(r"(?:^|[?&])partner=(\d+)")
 STEAM64_BASE = 76561197960265728
 
+
 session = requests.Session()
+
 session.headers.update({
-    "User-Agent": "Mozilla/5.0 (Steam CS2 Inventory Monitor; +https://github.com/)"
+    "User-Agent": "Mozilla/5.0 (Steam CS2 Inventory Monitor)"
 })
 
 
@@ -35,51 +39,67 @@ def load_json(path, default):
 def save_json(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    tmp = path.with_suffix(".tmp")
+    temp_path = path.with_suffix(".tmp")
 
-    with tmp.open("w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    with temp_path.open("w", encoding="utf-8") as f:
+        json.dump(
+            data,
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
         f.write("\n")
 
-    tmp.replace(path)
+    temp_path.replace(path)
 
 
 def steamid_from_trade_url(url):
-    m = PARTNER_RE.search(url)
+    match = PARTNER_RE.search(url)
 
-    if not m:
-        raise ValueError(f"Cannot find partner= in Trade URL: {url}")
+    if not match:
+        raise ValueError(
+            f"Cannot find partner= in Trade URL: {url}"
+        )
 
-    account_id = int(m.group(1))
+    account_id = int(match.group(1))
 
     return str(STEAM64_BASE + account_id)
 
 
 def telegram_send(text):
-    token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+    token = os.environ.get(
+        "TELEGRAM_BOT_TOKEN",
+        ""
+    ).strip()
+
+    chat_id = os.environ.get(
+        "TELEGRAM_CHAT_ID",
+        ""
+    ).strip()
 
     if not token or not chat_id:
-        print("Telegram secrets are not configured; notification skipped.")
+        print(
+            "Telegram secrets are not configured; "
+            "notification skipped."
+        )
         return
 
-    r = session.post(
+    response = session.post(
         TELEGRAM_API.format(token=token),
         json={
             "chat_id": chat_id,
             "text": text,
-            "parse_mode": "HTML",
             "disable_web_page_preview": True,
         },
         timeout=30,
     )
 
-    r.raise_for_status()
+    response.raise_for_status()
 
 
 def get_inventory(steamid):
-    all_assets = {}
-    all_descriptions = {}
+    all_items = {}
+
     start_assetid = None
 
     for _ in range(100):
@@ -91,202 +111,250 @@ def get_inventory(steamid):
         if start_assetid:
             params["start_assetid"] = start_assetid
 
-        r = session.get(
+        response = session.get(
             STEAM_INVENTORY.format(steamid=steamid),
             params=params,
             timeout=30,
         )
 
-        if r.status_code == 429:
+        if response.status_code == 429:
             raise RuntimeError(
                 f"Steam rate limited inventory request for {steamid}"
             )
 
-        r.raise_for_status()
+        response.raise_for_status()
 
-        data = r.json()
+        data = response.json()
 
         if data.get("success") != 1:
             raise RuntimeError(
-                f"Steam inventory returned success={data.get('success')}"
+                f"Steam inventory returned "
+                f"success={data.get('success')}"
             )
 
-        for desc in data.get("descriptions", []):
+        descriptions = {}
+
+        for description in data.get(
+            "descriptions",
+            []
+        ):
             key = (
-                str(desc.get("classid")),
-                str(desc.get("instanceid")),
+                str(description.get("classid")),
+                str(description.get("instanceid")),
             )
 
-            all_descriptions[key] = desc
+            descriptions[key] = description
 
-        for asset in data.get("assets", []):
-            asset_id = str(asset.get("assetid"))
+        for asset in data.get(
+            "assets",
+            []
+        ):
+            asset_id = str(
+                asset.get("assetid")
+            )
 
             key = (
                 str(asset.get("classid")),
                 str(asset.get("instanceid")),
             )
 
-            desc = all_descriptions.get(key, {})
+            description = descriptions.get(
+                key,
+                {}
+            )
 
-            tradable = int(desc.get("tradable", 1))
+            item_name = (
+                description.get("market_hash_name")
+                or description.get("name")
+                or "Unknown item"
+            )
 
-            all_assets[asset_id] = {
+            all_items[asset_id] = {
                 "assetid": asset_id,
-                "classid": str(asset.get("classid")),
-                "instanceid": str(asset.get("instanceid")),
-                "amount": str(asset.get("amount", "1")),
-                "market_hash_name": (
-                    desc.get("market_hash_name")
-                    or desc.get("name")
-                    or "Unknown item"
+                "classid": str(
+                    asset.get("classid")
                 ),
-                "name": desc.get("name") or "Unknown item",
-                "type": desc.get("type") or "",
-                "icon_url": desc.get("icon_url") or "",
-                "tradable": tradable,
+                "instanceid": str(
+                    asset.get("instanceid")
+                ),
+                "name": item_name,
             }
 
         if not data.get("more_items"):
             break
 
-        next_id = data.get("last_assetid")
+        next_assetid = data.get(
+            "last_assetid"
+        )
 
-        if not next_id or next_id == start_assetid:
+        if not next_assetid:
             break
 
-        start_assetid = next_id
+        if next_assetid == start_assetid:
+            break
+
+        start_assetid = next_assetid
 
         time.sleep(0.5)
 
-    return all_assets
+    return all_items
 
 
-def escape(s):
-    return (
-        str(s)
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-    )
-
-
-def send_new_item_message(account_name, item):
+def send_new_item_message(
+    account_name,
+    item
+):
     item_name = (
-        item.get("market_hash_name")
-        or item.get("name")
+        item.get("name")
         or "Unknown item"
     )
 
     message = (
-        "🟢 <b>Новый скин появился!</b>\n\n"
-        f"👤 Аккаунт: <b>{escape(account_name)}</b>\n"
-        f"🔫 <b>{escape(item_name)}</b>"
+        "🟢 Новый скин появился!\n\n"
+        f"👤 Аккаунт: {account_name}\n"
+        f"🔫 {item_name}"
     )
 
     telegram_send(message)
 
 
 def main():
-    config = load_json(CONFIG_PATH, {"accounts": []})
-    state = load_json(STATE_PATH, {"accounts": {}})
+    config = load_json(
+        CONFIG_PATH,
+        {"accounts": []}
+    )
 
-    accounts_state = state.setdefault("accounts", {})
+    state = load_json(
+        STATE_PATH,
+        {"accounts": {}}
+    )
+
+    accounts_state = state.setdefault(
+        "accounts",
+        {}
+    )
 
     changed = False
     errors = []
 
-    for account in config.get("accounts", []):
-        name = account.get("name", "Unnamed")
-        url = account.get("trade_url", "").strip()
+    for account in config.get(
+        "accounts",
+        []
+    ):
+        account_name = account.get(
+            "name",
+            "Unnamed"
+        )
 
-        if not url:
+        trade_url = account.get(
+            "trade_url",
+            ""
+        ).strip()
+
+        if not trade_url:
             continue
 
         try:
-            steamid = steamid_from_trade_url(url)
+            steamid = steamid_from_trade_url(
+                trade_url
+            )
 
-            inventory = get_inventory(steamid)
-            current_ids = set(inventory.keys())
+            inventory = get_inventory(
+                steamid
+            )
 
-            previous = accounts_state.get(name)
+            current_ids = set(
+                inventory.keys()
+            )
+
+            previous = accounts_state.get(
+                account_name
+            )
 
             if previous is None:
-                accounts_state[name] = {
+                accounts_state[account_name] = {
                     "steamid": steamid,
                     "assets": inventory,
-                    "last_check": datetime.now(timezone.utc).isoformat(),
+                    "last_check": datetime.now(
+                        timezone.utc
+                    ).isoformat(),
                 }
 
                 changed = True
 
                 print(
-                    f"{name}: baseline created "
-                    f"({len(inventory)} assets)"
+                    f"{account_name}: "
+                    f"{len(inventory)} assets, "
+                    f"baseline created"
                 )
 
                 continue
 
-            previous_assets = previous.get("assets", {})
-            previous_ids = set(previous_assets.keys())
+            previous_assets = previous.get(
+                "assets",
+                {}
+            )
+
+            previous_ids = set(
+                previous_assets.keys()
+            )
 
             new_ids = current_ids - previous_ids
 
-            for item_id in new_ids:
-                item = inventory[item_id]
+            for asset_id in new_ids:
+                item = inventory[asset_id]
 
-                if int(item.get("tradable", 1)) == 1:
-                    send_new_item_message(name, item)
-
-            for item_id in current_ids & previous_ids:
-                current_item = inventory[item_id]
-                previous_item = previous_assets[item_id]
-
-                current_tradable = int(
-                    current_item.get("tradable", 1)
+                send_new_item_message(
+                    account_name,
+                    item
                 )
 
-                previous_tradable = previous_item.get("tradable")
-
-                if previous_tradable is None:
-                    continue
-
-                previous_tradable = int(previous_tradable)
-
-                if previous_tradable == 0 and current_tradable == 1:
-                    send_new_item_message(name, current_item)
-
-            accounts_state[name] = {
+            accounts_state[account_name] = {
                 "steamid": steamid,
                 "assets": inventory,
-                "last_check": datetime.now(timezone.utc).isoformat(),
+                "last_check": datetime.now(
+                    timezone.utc
+                ).isoformat(),
             }
 
             changed = True
 
             print(
-                f"{name}: {len(inventory)} assets, "
+                f"{account_name}: "
+                f"{len(inventory)} assets, "
                 f"{len(new_ids)} new"
             )
 
-        except Exception as exc:
-            msg = f"{name}: {type(exc).__name__}: {exc}"
+        except Exception as error:
+            error_message = (
+                f"{account_name}: "
+                f"{type(error).__name__}: "
+                f"{error}"
+            )
 
-            print(msg, file=sys.stderr)
+            print(
+                error_message,
+                file=sys.stderr
+            )
 
-            errors.append(msg)
+            errors.append(
+                error_message
+            )
 
     if errors:
         telegram_send(
-            "⚠️ <b>Steam Monitor error</b>\n\n"
+            "⚠️ Steam Monitor error\n\n"
             + "\n".join(
-                f"• {escape(x)}"
-                for x in errors
+                f"• {error}"
+                for error in errors
             )
         )
 
     if changed:
-        save_json(STATE_PATH, state)
+        save_json(
+            STATE_PATH,
+            state
+        )
 
 
 if __name__ == "__main__":
