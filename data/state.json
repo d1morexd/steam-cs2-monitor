@@ -3,11 +3,23 @@
     "OSNOVA 1": {
       "steamid": "76561198847358357",
       "assets": {
-        "53598007641": {
-          "assetid": "53598007641",
-          "classid": "7993035908",
-          "instanceid": "8478726352",
-          "name": "AK-47 | Searing Rage (Field-Tested)"
+        "54212213268": {
+          "assetid": "54212213268",
+          "classid": "259085583",
+          "instanceid": "480085569",
+          "name": "FAMAS | Afterimage (Minimal Wear)"
+        },
+        "54036490383": {
+          "assetid": "54036490383",
+          "classid": "259062557",
+          "instanceid": "7976706854",
+          "name": "AWP | Redline (Field-Tested)"
+        },
+        "53777080462": {
+          "assetid": "53777080462",
+          "classid": "7993044395",
+          "instanceid": "188530139",
+          "name": "★ Driver Gloves | Snow Leopard (Battle-Scarred)"
         },
         "53598007640": {
           "assetid": "53598007640",
@@ -21,23 +33,11 @@
           "instanceid": "302028390",
           "name": "MAC-10 | Snow Splash (Factory New)"
         },
-        "53432534391": {
-          "assetid": "53432534391",
-          "classid": "7993037771",
-          "instanceid": "302028390",
-          "name": "P250 | Sedimentary (Well-Worn)"
-        },
         "53024082469": {
           "assetid": "53024082469",
           "classid": "241593295",
           "instanceid": "6522389030",
           "name": "FAMAS | Teardown (Minimal Wear)"
-        },
-        "53023982334": {
-          "assetid": "53023982334",
-          "classid": "7993039013",
-          "instanceid": "188530139",
-          "name": "MP9 | Deadly Poison (Minimal Wear)"
         },
         "53023752256": {
           "assetid": "53023752256",
@@ -147,12 +147,6 @@
           "instanceid": "7770898028",
           "name": "C4 Explosive"
         },
-        "50460662081": {
-          "assetid": "50460662081",
-          "classid": "7993035943",
-          "instanceid": "6280980196",
-          "name": "Glock-18 | Moonrise (Field-Tested)"
-        },
         "50140091183": {
           "assetid": "50140091183",
           "classid": "7993067216",
@@ -189,11 +183,11 @@
           "instanceid": "565664004",
           "name": "Premier Season One Medal"
         },
-        "53777080462": {
-          "assetid": "53777080462",
-          "classid": "7993044395",
-          "instanceid": "188530139",
-          "name": "★ Driver Gloves | Snow Leopard (Battle-Scarred)"
+        "54219178555": {
+          "assetid": "54219178555",
+          "classid": "7993037476",
+          "instanceid": "6276299824",
+          "name": "USP-S | Monster Mashup (Minimal Wear)"
         },
         "37337462977": {
           "assetid": "37337462977",
@@ -274,7 +268,7 @@
           "name": "2020 Service Medal"
         }
       },
-      "last_check": "2026-10-11T20:29:14.977703+00:00"
+      "last_check": "2026-10-28T20:31:31.384811+00:00"
     },
     "QCOLD 2": {
       "steamid": "76561199150410890",
@@ -304,7 +298,7 @@
           "name": "Global Offensive Badge"
         }
       },
-      "last_check": "2026-10-11T20:29:25.059447+00:00"
+      "last_check": "2026-10-28T20:33:27.461135+00:00"
     },
     "TWINK 3": {
       "steamid": "76561199088058787",
@@ -406,7 +400,7 @@
           "name": "Desert Eagle"
         }
       },
-      "last_check": "2026-10-11T20:31:20.624449+00:00"
+      "last_check": "2026-10-28T20:33:37.795228+00:00"
     },
     "2022 4": {
       "steamid": "76561199114095749",
@@ -436,7 +430,7 @@
           "name": "Global Offensive Badge"
         }
       },
-      "last_check": "2026-10-11T20:33:16.118643+00:00"
+      "last_check": "2026-10-28T20:35:33.963140+00:00"
     },
     "GAMOS 5": {
       "steamid": "76561199501554566",
@@ -445,48 +439,22 @@
           "assetid": "53026786534",
           "classid": "7993037088",
           "instanceid": "302028390",
-          "amount": "1",
-          "market_hash_name": "Five-SeveN | Sky Blue (Minimal Wear)",
-          "name": "Five-SeveN | Sky Blue",
-          "type": "Industrial Grade Pistol",
-          "icon_url": "i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIGz3UqlXOLrxM-vMGmW8VNxu5Dx60noTyL3l4Dl7idN6vyRe6toH_KfG2KvwOByj-JhXSa-kCIrujqNjsGueHuXb1VxDZRzFuJe5BC4w4XnYbnj5A2NjIMUyyr3iikY6Cc4tecBT-N7rc172J_D",
-          "tradable": 1
-        },
-        "53026786533": {
-          "assetid": "53026786533",
-          "classid": "4717330486",
-          "instanceid": "302028390",
-          "amount": "1",
-          "market_hash_name": "Dreams & Nightmares Case",
-          "name": "Dreams & Nightmares Case",
-          "type": "Base Grade Container",
-          "icon_url": "i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frnIV7Kb5OaU-JqfHDzXFle0u4LY8Gy_kkRgisGzcm4v4J3vDOAQmDMdyRvlK7EcmeCU3yw",
-          "tradable": 1
+          "name": "Five-SeveN | Sky Blue (Minimal Wear)"
         },
         "48922328927": {
           "assetid": "48922328927",
           "classid": "5537026493",
           "instanceid": "0",
-          "amount": "1",
-          "market_hash_name": "Music Kit | Valve, CS:GO",
-          "name": "Music Kit | Valve, CS:GO",
-          "type": "High Grade Music Kit",
-          "icon_url": "i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGIijyEKzb_3d19nuI3qb81NKpNa66wu1Qx-mm8Kx-CYC6aD2bv0-IfPFWGHIkegh5LY4GXzlxU905W7UwsHpLywWgep6oQ",
-          "tradable": 0
+          "name": "Music Kit | Valve, CS:GO"
         },
         "48922328926": {
           "assetid": "48922328926",
           "classid": "5537026494",
           "instanceid": "0",
-          "amount": "1",
-          "market_hash_name": "Global Offensive Badge",
-          "name": "Global Offensive Badge",
-          "type": "Extraordinary Collectible",
-          "icon_url": "i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJai2l-lQ8ndwMWvJjSU6l97y4Tn7VapFB6kzsLmrXcP7vSvMfY_d6jAWTfHlLZ34rA4GXrnlkh052_TwomvdWXXMFHAFOJ0XQ",
-          "tradable": 0
+          "name": "Global Offensive Badge"
         }
       },
-      "last_check": "2026-10-06T00:33:03.310202+00:00"
+      "last_check": "2026-10-28T20:37:30.063139+00:00"
     }
   }
 }
