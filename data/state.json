@@ -3,11 +3,83 @@
     "OSNOVA 1": {
       "steamid": "76561198847358357",
       "assets": {
-        "54212213268": {
-          "assetid": "54212213268",
-          "classid": "259085583",
+        "54566924492": {
+          "assetid": "54566924492",
+          "classid": "5189384637",
+          "instanceid": "302028390",
+          "name": "Revolution Case"
+        },
+        "54587538980": {
+          "assetid": "54587538980",
+          "classid": "1989271423",
+          "instanceid": "302028390",
+          "name": "Graffiti | Tilt (Princess Pink)"
+        },
+        "54559198625": {
+          "assetid": "54559198625",
+          "classid": "7993042633",
+          "instanceid": "6276414984",
+          "name": "Desert Eagle | Code Red (Battle-Scarred)"
+        },
+        "54475488115": {
+          "assetid": "54475488115",
+          "classid": "7993037195",
+          "instanceid": "7583352534",
+          "name": "Glock-18 | Shinobu (Well-Worn)"
+        },
+        "54472831795": {
+          "assetid": "54472831795",
+          "classid": "7993035792",
+          "instanceid": "188530139",
+          "name": "★ Hand Wraps | Constrictor (Field-Tested)"
+        },
+        "54472831794": {
+          "assetid": "54472831794",
+          "classid": "9214789333",
           "instanceid": "480085569",
-          "name": "FAMAS | Afterimage (Minimal Wear)"
+          "name": "★ Navaja Knife | Case Hardened (Field-Tested)"
+        },
+        "54449602138": {
+          "assetid": "54449602138",
+          "classid": "7993035816",
+          "instanceid": "480085569",
+          "name": "AK-47 | Cartel (Field-Tested)"
+        },
+        "54449602137": {
+          "assetid": "54449602137",
+          "classid": "4141780734",
+          "instanceid": "519977179",
+          "name": "Safecracker Voltzmann | The Professionals"
+        },
+        "54399251117": {
+          "assetid": "54399251117",
+          "classid": "7993037614",
+          "instanceid": "6276303390",
+          "name": "AWP | Asiimov (Battle-Scarred)"
+        },
+        "54352395721": {
+          "assetid": "54352395721",
+          "classid": "7993064000",
+          "instanceid": "302028390",
+          "name": "MP9 | Bee-Tron (Field-Tested)"
+        },
+        "54314438507": {
+          "assetid": "54314438507",
+          "classid": "7993042152",
+          "instanceid": "188530139",
+          "name": "★ Sport Gloves | Bronze Morph (Minimal Wear)"
+        },
+        "54272358884": {
+          "assetid": "54272358884",
+          "classid": "8620778780",
+          "instanceid": "188530139",
+          "name": "Sticker | Partyboy"
+        },
+        "54219178555": {
+          "assetid": "54219178555",
+          "classid": "7993037476",
+          "instanceid": "6276299824",
+          "name": "USP-S | Monster Mashup (Minimal Wear)"
         },
         "54036490383": {
           "assetid": "54036490383",
@@ -77,7 +149,7 @@
         },
         "52486571319": {
           "assetid": "52486571319",
-          "classid": "7993042242",
+          "classid": "9214789693",
           "instanceid": "188530139",
           "name": "★ M9 Bayonet | Case Hardened (Field-Tested)"
         },
@@ -147,11 +219,23 @@
           "instanceid": "7770898028",
           "name": "C4 Explosive"
         },
+        "50460662081": {
+          "assetid": "50460662081",
+          "classid": "7993035943",
+          "instanceid": "6280980196",
+          "name": "Glock-18 | Moonrise (Field-Tested)"
+        },
         "50140091183": {
           "assetid": "50140091183",
           "classid": "7993067216",
           "instanceid": "302028390",
           "name": "MP7 | Coral Paisley (Minimal Wear)"
+        },
+        "50115063139": {
+          "assetid": "50115063139",
+          "classid": "7993037018",
+          "instanceid": "188530170",
+          "name": "StatTrak™ Five-SeveN | Scrawl (Battle-Scarred)"
         },
         "49855518662": {
           "assetid": "49855518662",
@@ -183,11 +267,11 @@
           "instanceid": "565664004",
           "name": "Premier Season One Medal"
         },
-        "54219178555": {
-          "assetid": "54219178555",
-          "classid": "7993037476",
-          "instanceid": "6276299824",
-          "name": "USP-S | Monster Mashup (Minimal Wear)"
+        "54566925933": {
+          "assetid": "54566925933",
+          "classid": "1989275075",
+          "instanceid": "302028390",
+          "name": "Graffiti | 8-Ball (Battle Green)"
         },
         "37337462977": {
           "assetid": "37337462977",
@@ -268,7 +352,7 @@
           "name": "2020 Service Medal"
         }
       },
-      "last_check": "2026-10-28T20:31:31.384811+00:00"
+      "last_check": "2026-11-18T20:42:59.734684+00:00"
     },
     "QCOLD 2": {
       "steamid": "76561199150410890",
@@ -298,7 +382,7 @@
           "name": "Global Offensive Badge"
         }
       },
-      "last_check": "2026-10-28T20:33:27.461135+00:00"
+      "last_check": "2026-11-18T20:43:10.002350+00:00"
     },
     "TWINK 3": {
       "steamid": "76561199088058787",
@@ -400,7 +484,7 @@
           "name": "Desert Eagle"
         }
       },
-      "last_check": "2026-10-30T20:17:00.304581+00:00"
+      "last_check": "2026-11-18T20:43:20.177492+00:00"
     },
     "2022 4": {
       "steamid": "76561199114095749",
@@ -430,7 +514,7 @@
           "name": "Global Offensive Badge"
         }
       },
-      "last_check": "2026-11-15T20:20:18.692693+00:00"
+      "last_check": "2026-11-18T20:43:30.344323+00:00"
     },
     "GAMOS 5": {
       "steamid": "76561199501554566",
@@ -454,7 +538,7 @@
           "name": "Global Offensive Badge"
         }
       },
-      "last_check": "2026-11-15T20:20:28.832474+00:00"
+      "last_check": "2026-11-18T20:45:26.515699+00:00"
     }
   }
 }
